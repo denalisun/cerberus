@@ -13,6 +13,7 @@ DWORD APIENTRY MainThread(HMODULE hModule) {
     CLOG("Cerberus loaded!");
 
     uintptr_t baseAddr = reinterpret_cast<uintptr_t>(GetModuleHandle(0));
+    CLOG("Base address: " + std::to_string(baseAddr)); // I hope this doesn't crash
     
     // Update globals, initialize hooks && create UE console
     Globals::Update();

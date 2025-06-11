@@ -68,7 +68,8 @@ namespace Inventory
 		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Weapon->ItemEntry);
 		GPlayerController->WorldInventory->Inventory.ItemInstances.Add(Weapon);
 
-		// Need to replace this // GPlayerController->ServerAddItemInternal(Weapon->GetItemGuid(), QuickBar, Slot);
+		// Need to replace this
+		GPlayerController->ServerAddItemInternal(Weapon->GetItemGuid(), QuickBar, Slot);
 
 		UpdateInventory();
 	}

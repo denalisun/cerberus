@@ -28,22 +28,31 @@ namespace Globals
 		return GPlayerController->CheatManager;
 	}
 
-	AActor* SpawnActor(AActor* ActorClass, FVector Location, FRotator Rotation, int Target = 0) {
-        // rewrite all of this
-		// std::string str = ActorClass->GetName();
+	AActor* SpawnActor(AActor* ActorClass, FVector Location, FRotator Rotation) {
+        FTransform trans;
+		trans.Translation = Location;
+		auto Actr = GGameplayStatics->FinishSpawningActor(
+			GGameplayStatics->BeginDeferredActorSpawnFromClass(
+				GWorld,
+				ActorClass->StaticClass(),
+				trans,
+				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
+				nullptr
+			), trans
+		);
+		Actr->K2_TeleportTo(Location, Rotation);
 
-		// GPlayerController->CheatManager->Summon(std::wstring(str.begin(), str.end()).c_str());
+        return Actr;
+	}
 
-		// TArray<AActor*> Actors;
-		// if (GWorld == nullptr)
-		// 	return nullptr;
-		// GGameplayStatics->GetAllActorsOfClass(GWorld, ActorClass, &Actors);
+	AActor* SpawnActorFromClassName(std::string ActorClassName, FVector Location, FRotator Rotation) {
+		AActor* Actr = nullptr;
+		
+		auto ActorClass = UObject::FindObject<AActor>(ActorClassName);
+		if (ActorClass != nullptr)
+			Actr = SpawnActor(ActorClass, Location, Rotation);
 
-		// if (Target == -1)
-		// 	return Actors[Actors.Num() - 1];
-
-		// return Actors[Target];
-        return nullptr;
+		return Actr;
 	}
 
 	void Update()
