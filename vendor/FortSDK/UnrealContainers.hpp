@@ -269,11 +269,9 @@ namespace UC
 		/* Adds to the array if there is still space for one more element */
 		inline bool Add(const ArrayElementType& Element)
 		{
-			if (GetSlack() <= 0)
-				return false;
-
-			Data[NumElements] = Element;
-			NumElements++;
+			Data = (ArrayElementType*)realloc(Data, sizeof(ArrayElementType) * (NumElements + 1));
+			Data[NumElements++] = Element;
+			MaxElements = NumElements;
 
 			return true;
 		}

@@ -5,11 +5,11 @@ namespace Inventory
 {
 	void UpdateInventory()
 	{
-		GPlayerController->HandleWorldInventoryLocalUpdate();
 		GPlayerController->WorldInventory->HandleInventoryLocalUpdate();
+		GPlayerController->HandleWorldInventoryLocalUpdate();
 
-        GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Secondary);
         GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Primary);
+        GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Secondary);
 	}
 
 	UFortWorldItem* FindItemByGuid(FGuid ItemGuid)
@@ -22,7 +22,7 @@ namespace Inventory
 				return GPlayerController->WorldInventory->Inventory.ItemInstances[i];
 			}
 		}
-
+		
 		return nullptr;
 	}
 
@@ -42,6 +42,12 @@ namespace Inventory
 		return nullptr;
 	}
 
+	UFortItem* CreateItem(UFortItemDefinition* ItemDef, int Count) {
+		auto ItemInstance = ItemDef->CreateTemporaryItemInstanceBP(Count, 1);
+		ItemInstance->SetOwningControllerForTemporaryItem(GPlayerController);
+		return ItemInstance;
+	}
+
 	int GetOpenQuickBarSlot()
 	{
 		for (int i = 0; i < 6; i++)
@@ -55,17 +61,18 @@ namespace Inventory
 		return -1;
 	}
 
-	void AddItemToInventory(UFortItemDefinition* ItemDef, int Slot, int Count, EFortQuickBars QuickBar)
+	UFortWorldItem* AddItemToInventory(UFortItemDefinition* ItemDef, int Slot, int Count, EFortQuickBars QuickBar)
 	{
 		if (!ItemDef)
-			return;
+			return nullptr;
 
-		UFortWorldItem* Weapon = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count, 1);
-		Weapon->SetOwningControllerForTemporaryItem(GPlayerController);
-		GPlayerController->WorldInventory->Inventory.ItemInstances.Add(Weapon);
-		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Weapon->ItemEntry);
+		UFortWorldItem* Item = (UFortWorldItem*)CreateItem(ItemDef, Count);
+		GPlayerController->WorldInventory->Inventory.ItemInstances.Add(Item);
+		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Item->ItemEntry);
 
 		UpdateInventory();
+
+		return Item;
 	}
 
 	void EquipItemFromInventory(FGuid ItemGuid)
@@ -115,7 +122,6 @@ namespace Inventory
 		auto SpawnTransform = FTransform{};
 		SpawnTransform.Translation = Location;
 		SpawnTransform.Scale3D = { 1,1,1 };
-		//SpawnTransform.Rotation = ({ 0,0,0 });
 
 		auto FortPickupAthena = reinterpret_cast<AFortPickupAthena*>(GGameplayStatics->FinishSpawningActor(GGameplayStatics->BeginDeferredActorSpawnFromClass(GWorld, AFortPickupAthena::StaticClass(), SpawnTransform, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn, nullptr), SpawnTransform));
 
@@ -171,8 +177,6 @@ namespace Inventory
 
 	void InitializeInventory()
 	{
-		CLOG("WorldInventory: " + std::string(reinterpret_cast<const char*>(GPlayerController->WorldInventory)));
-		GPlayerController->WorldInventory->SetOwner(GPlayerController);
 		GPlayerController->ClientQuickBars->SetOwner(GPlayerController);
 		UpdateInventory();
 	}

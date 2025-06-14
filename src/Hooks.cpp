@@ -21,10 +21,10 @@ namespace Hooks {
 
                 CLOG("Grabbed GameMode and GameState!");
 
-                //UFortPlaylistAthena* Playlist = (UFortPlaylistAthena*)Globals::FindObject("Playlist_DefaultSolo.Playlist_DefaultSolo");
-                //GameState->CurrentPlaylistInfo.BasePlaylist = Playlist;
-                //GameState->CurrentPlaylistInfo.OverridePlaylist = Playlist;
-                //GameState->OnRep_CurrentPlaylistInfo();
+                auto Playlist = UObject::FindObject<UFortPlaylistAthena>("FortPlaylistAthena Playlist_DefaultSolo.Playlist_DefaultSolo");
+                GameState->CurrentPlaylistInfo.BasePlaylist = Playlist;
+                GameState->CurrentPlaylistInfo.OverridePlaylist = Playlist;
+                GameState->OnRep_CurrentPlaylistInfo();
                 
                 GameState->AircraftStartTime = 100.f;
                 GameState->WarmupCountdownEndTime = 100.f;
@@ -54,32 +54,36 @@ namespace Hooks {
                 // Initializing inventory
                 Inventory::InitializeInventory();
 
-                auto PickaxeDef = Globals::GPlayerController->CustomizationLoadout.Pickaxe->WeaponDefinition;
-                if (PickaxeDef != nullptr)
-                    Inventory::AddItemToInventory(PickaxeDef, 0);
-                CLOG("PickaxeDef: " + std::string(reinterpret_cast<const char*>(PickaxeDef)));
-
                 // Looping through DefaultPlayer and applying all abilities.
                 Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("Class FortniteGame.FortGameplayAbility_Jump"));
                 Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("Class FortniteGame.FortGameplayAbility_Sprint"));
                 Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("BlueprintGeneratedClass GA_DefaultPlayer_InteractSearch.GA_DefaultPlayer_InteractSearch_C"));
                 Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("BlueprintGeneratedClass GA_DefaultPlayer_InteractUse.GA_DefaultPlayer_InteractUse_C"));
 
-                // //TODO: Add building WIDs
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Wall.BuildingItemData_Wall"), 0);
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Floor.BuildingItemData_Floor"), 1);
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Stair_W.BuildingItemData_Stair_W"), 2);
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_RoofS.BuildingItemData_RoofS"), 3);
+                // Granting pickaxe
+                auto PickaxeDef = Globals::GPlayerController->CustomizationLoadout.Pickaxe->WeaponDefinition;
+                if (!PickaxeDef)
+                    PickaxeDef = UObject::FindObject<UFortWeaponMeleeItemDefinition>("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_C_T01.WID_Harvest_Pickaxe_C_T01");
+                auto PickaxeItem = Inventory::AddItemToInventory(PickaxeDef, 0);
+                Inventory::EquipItemFromInventory(PickaxeItem->ItemEntry.ItemGuid);
+
+                //TODO: Add building WIDs
+                Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Wall.BuildingItemData_Wall"), 0, 1, EFortQuickBars::Secondary);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Floor.BuildingItemData_Floor"), 1, 1, EFortQuickBars::Secondary);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Stair_W.BuildingItemData_Stair_W"), 2, 1, EFortQuickBars::Secondary);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_RoofS.BuildingItemData_RoofS"), 3, 1, EFortQuickBars::Secondary);
 
                 // Add resources
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition WoodItemData.WoodItemData"), 0, 999);
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition StoneItemData.StoneItemData"), 0, 999);
-                // Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition MetalItemData.MetalItemData"), 0, 999);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition WoodItemData.WoodItemData"), 0, 999);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition StoneItemData.StoneItemData"), 0, 999);
+                Inventory::AddItemToInventory(UObject::FindObject<UFortResourceItemDefinition>("FortResourceItemDefinition MetalItemData.MetalItemData"), 0, 999);
 
-                // // OK lets try minimap hopefully it works
+                // OK lets try minimap hopefully it works
                 UTexture2D* MiniMapTexture = UObject::FindObject<UTexture2D>("Texture2D MiniMapAthena.MiniMapAthena");
                 AFortGameStateAthena* GameState = (AFortGameStateAthena*)Globals::GEngine->GameViewport->World->GameState;
                 GameState->MinimapBackgroundBrush.ResourceObject = MiniMapTexture;
+                GameState->MinimapBackgroundImage = MiniMapTexture;
+                // Ok so it doesn't work
             }
             
             if (funcName.find("ServerExecuteInventoryItem") != std::string::npos)
