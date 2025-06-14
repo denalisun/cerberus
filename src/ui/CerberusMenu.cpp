@@ -9,12 +9,12 @@ CerberusMenu::CerberusMenu() {
 }
 
 void CerberusMenu::Tick() {
-    if ((GetAsyncKeyState(VK_INSERT) & 0x8000) && !this->m_bIsInsertPressed) {
+    if ((GetAsyncKeyState(VK_DELETE) & 0x8000) && !this->m_bIsInsertPressed) {
         this->m_bIsOpen = !this->m_bIsOpen;
         this->m_bIsInsertPressed = true;
     }
     
-    if (!(GetAsyncKeyState(VK_INSERT) & 0x8000) && this->m_bIsInsertPressed)
+    if (!(GetAsyncKeyState(VK_DELETE) & 0x8000) && this->m_bIsInsertPressed)
         this->m_bIsInsertPressed = false;
 }
 

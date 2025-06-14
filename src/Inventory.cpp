@@ -62,11 +62,8 @@ namespace Inventory
 
 		UFortWorldItem* Weapon = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count, 1);
 		Weapon->SetOwningControllerForTemporaryItem(GPlayerController);
-		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Weapon->ItemEntry);
 		GPlayerController->WorldInventory->Inventory.ItemInstances.Add(Weapon);
-
-		// (Correction: No I dont) Need to replace this
-		//GPlayerController->ServerAddItemInternal(Weapon->GetItemGuid(), QuickBar, Slot);
+		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Weapon->ItemEntry);
 
 		UpdateInventory();
 	}

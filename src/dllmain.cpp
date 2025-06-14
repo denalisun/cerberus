@@ -11,8 +11,6 @@ DWORD APIENTRY MainThread(HMODULE hModule) {
     FILE* pFile;
     freopen_s(&pFile, "CONOUT$", "w", stdout);
 
-    CLOG("Cerberus loaded!");
-
     uintptr_t baseAddr = reinterpret_cast<uintptr_t>(GetModuleHandle(0));
     CLOG("Base address: " + std::to_string(baseAddr)); // I hope this doesn't crash
     
@@ -37,6 +35,9 @@ DWORD APIENTRY MainThread(HMODULE hModule) {
     // Add all windows to the UIWindows vector in GUI
     GUI::UIWindows.push_back(watermarkWindow);
     GUI::UIWindows.push_back(cerberusMenu);
+
+    // OK inject message
+    CLOG("Injected OK!");
 
     return 0;
 }
