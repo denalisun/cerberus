@@ -7,6 +7,7 @@
 #include "Inventory.hpp"
 #include "Player.hpp"
 #include "MinHook.h"
+#include <iostream>
 using namespace SDK;
 
 // Including parameters

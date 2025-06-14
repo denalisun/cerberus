@@ -8,20 +8,18 @@ namespace Hooks {
         if (pObject != nullptr && pFunction != nullptr)
         {
             std::string funcName = pFunction->GetName();
-            
-            // I need to use ImGui
-            // if (funcName.find("_PlayButton") != std::string::npos)
-            // {
-            //     Globals::GPlayerController->SwitchLevel(L"Athena_Terrain");
-            // }
 
             if (funcName.find("ReadyToStartMatch") != std::string::npos && !Globals::InGame)
             {
                 Globals::InGame = true;
                 Globals::Update();
 
+                CLOG("Updated Globals!");
+
                 AFortGameModeAthena* GameMode = (AFortGameModeAthena*)pObject;
                 AFortGameStateAthena* GameState = (AFortGameStateAthena*)GameMode->GameState;
+
+                CLOG("Grabbed GameMode and GameState!");
 
                 //UFortPlaylistAthena* Playlist = (UFortPlaylistAthena*)Globals::FindObject("Playlist_DefaultSolo.Playlist_DefaultSolo");
                 //GameState->CurrentPlaylistInfo.BasePlaylist = Playlist;
@@ -44,7 +42,7 @@ namespace Hooks {
                 Globals::GPlayerController->ServerReadyToStartMatch();
                 
                 // Show skin
-                //Globals::GPlayerPawn->OnRep_CustomizationLoadout();
+                Globals::GPlayerPawn->OnRep_CustomizationLoadout();
                 Player::ShowSkin();
                 Globals::GCheatManager->DestroyAll(AFortHLODSMActor::StaticClass());
             }
@@ -53,17 +51,20 @@ namespace Hooks {
             {
                 Globals::LoadingScreenDropped = true;
 
-                // Looping through DefaultPlayer and applying all abilities.
-                // Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("Class FortniteGame.FortGameplayAbility_Jump"));
-                // Abilities::GiveAbility((UGameplayAbility*)UObject::FindObject("FortGameplayAbility_Sprint"));
-                // Abilities::GiveAbility((UGameplayAbility*)UObject::FindObject("GA_DefaultPlayer_InteractSearch.GA_DefaultPlayer_InteractSearch_C"));
-                // Abilities::GiveAbility((UGameplayAbility*)UObject::FindObject("GA_DefaultPlayer_InteractUse.GA_DefaultPlayer_InteractUse_C"));
-
                 // Initializing inventory
-                // Inventory::InitializeInventory();
+                Inventory::InitializeInventory();
 
-                // auto PickaxeDef = Globals::GPlayerController->CustomizationLoadout.Pickaxe->WeaponDefinition;
-                // Inventory::AddItemToInventory(PickaxeDef, 0);
+                auto PickaxeDef = Globals::GPlayerController->CustomizationLoadout.Pickaxe->WeaponDefinition;
+                if (PickaxeDef != nullptr)
+                    Inventory::AddItemToInventory(PickaxeDef, 0);
+                CLOG("PickaxeDef: " + std::string(reinterpret_cast<const char*>(PickaxeDef)));
+
+                // Looping through DefaultPlayer and applying all abilities.
+                Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("Class FortniteGame.FortGameplayAbility_Jump"));
+                Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("Class FortniteGame.FortGameplayAbility_Sprint"));
+                Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("BlueprintGeneratedClass GA_DefaultPlayer_InteractSearch.GA_DefaultPlayer_InteractSearch_C"));
+                Abilities::GiveAbility(UObject::FindObject<UGameplayAbility>("BlueprintGeneratedClass GA_DefaultPlayer_InteractUse.GA_DefaultPlayer_InteractUse_C"));
+
                 // //TODO: Add building WIDs
                 // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Wall.BuildingItemData_Wall"), 0);
                 // Inventory::AddItemToInventory(UObject::FindObject<UFortBuildingItemDefinition>("FortBuildingItemDefinition BuildingItemData_Floor.BuildingItemData_Floor"), 1);

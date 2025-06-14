@@ -43,7 +43,9 @@ namespace Player
 
 		PlayerState->CharacterBodyType = Hero->CharacterParts[1]->BodyTypesPermitted;
 		GPlayerPawn->CharacterBodyType = Hero->CharacterParts[1]->BodyTypesPermitted;
+		PlayerState->OnRep_CharacterBodyType();
 		GPlayerPawn->CharacterGender = Hero->CharacterParts[1]->GenderPermitted;
+		PlayerState->OnRep_CharacterGender();
 		PlayerState->OnRep_CharacterParts();
 	}
 

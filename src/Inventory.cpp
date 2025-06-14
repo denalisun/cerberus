@@ -1,14 +1,15 @@
 #include "Inventory.hpp"
+#include "Utils.hpp"
 
 namespace Inventory
 {
 	void UpdateInventory()
 	{
-		GPlayerController->WorldInventory->HandleInventoryLocalUpdate();
 		GPlayerController->HandleWorldInventoryLocalUpdate();
+		GPlayerController->WorldInventory->HandleInventoryLocalUpdate();
 
-        GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Primary);
         GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Secondary);
+        GPlayerController->ClientForceUpdateQuickbar(EFortQuickBars::Primary);
 	}
 
 	UFortWorldItem* FindItemByGuid(FGuid ItemGuid)
@@ -60,10 +61,11 @@ namespace Inventory
 			return;
 
 		UFortWorldItem* Weapon = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count, 1);
+		Weapon->SetOwningControllerForTemporaryItem(GPlayerController);
 		GPlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Weapon->ItemEntry);
 		GPlayerController->WorldInventory->Inventory.ItemInstances.Add(Weapon);
 
-		// Need to replace this
+		// (Correction: No I dont) Need to replace this
 		//GPlayerController->ServerAddItemInternal(Weapon->GetItemGuid(), QuickBar, Slot);
 
 		UpdateInventory();
@@ -172,10 +174,9 @@ namespace Inventory
 
 	void InitializeInventory()
 	{
-		// Spawning QuickBars
-		FTransform BaseTransform = FTransform{};
-		// GPlayerController->ClientQuickBars = reinterpret_cast<AFortQuickBars*>(GGameplayStatics->FinishSpawningActor(GGameplayStatics->BeginDeferredActorSpawnFromClass(GEngine->GameViewport->World, AFortQuickBars::StaticClass(), BaseTransform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, GPlayerController), BaseTransform));
-
+		CLOG("WorldInventory: " + std::string(reinterpret_cast<const char*>(GPlayerController->WorldInventory)));
+		GPlayerController->WorldInventory->SetOwner(GPlayerController);
+		GPlayerController->ClientQuickBars->SetOwner(GPlayerController);
 		UpdateInventory();
 	}
 }

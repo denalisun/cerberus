@@ -1,4 +1,5 @@
 #include "Abilities.hpp"
+#include "Utils.hpp"
 
 namespace Abilities {
     void GiveAbility(UGameplayAbility* GameplayAbility) {
@@ -10,5 +11,7 @@ namespace Abilities {
 		auto GameplayEffect = UObject::FindObject<UGameplayEffect>("BlueprintGeneratedClass GE_Athena_PurpleStuff_Health.GE_Athena_PurpleStuff_Health_C");
 
 		Globals::GPlayerPawn->AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(GameplayEffect, 1.0f, SDK::FGameplayEffectContextHandle());
+
+		CLOG("Granted Ability!");
 	}
 }

@@ -46,6 +46,7 @@ set(SOURCES
     "vendor/imgui/imgui_widgets.cpp"
     "vendor/imgui/imgui_impl_dx11.cpp"
     "vendor/imgui/imgui_impl_win32.cpp"
+    "vendor/imgui/imgui_stdlib.cpp"
     "vendor/kiero/kiero.cpp"
 )
 
